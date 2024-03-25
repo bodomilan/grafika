@@ -1,4 +1,4 @@
-# Install script for directory: /home/bodo/Desktop/grafika_mi21173/project_base/libs/glad
+# Install script for directory: /home/bodo/Desktop/grafika/libs/glad
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

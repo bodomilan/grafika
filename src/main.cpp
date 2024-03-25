@@ -163,8 +163,8 @@ int main() {
     // build and compile shaders
     // -------------------------
     Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
-    Shader shader("6.1.cubemaps.vs", "6.1.cubemaps.fs");
-    Shader skyboxShader("6.1.skybox.vs", "6.1.skybox.fs");
+    Shader shader("resources/shaders/6.1.cubemaps.vs", "resources/shaders/6.1.cubemaps.fs");
+    Shader skyboxShader("resources/shaders/6.1.skybox.vs", "resources/shaders/6.1.skybox.fs");
     // load models
     // -----------
     Model ourModel("resources/objects/48a0d39d43a04bcda072bf4e9b84dfe4/scene.gltf");
