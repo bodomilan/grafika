@@ -40,7 +40,7 @@ bool firstMouse = true;
 // timing
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-
+/*
 struct PointLight {
     glm::vec3 position;
     glm::vec3 ambient;
@@ -51,6 +51,14 @@ struct PointLight {
     float linear;
     float quadratic;
 };
+*/
+struct DirLight {
+    glm::vec3 direction;
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+};
+
 
 struct ProgramState {
     glm::vec3 clearColor = glm::vec3(0);
@@ -59,7 +67,8 @@ struct ProgramState {
     bool CameraMouseMovementUpdateEnabled = true;
     glm::vec3 backpackPosition = glm::vec3(0.0f);
     float backpackScale = 0.01f;
-    PointLight pointLight;
+    //PointLight pointLight;
+    DirLight dirLight;
     ProgramState()
             : camera(glm::vec3(0.0f, 0.0f, 3.0f)) {}
 
@@ -161,8 +170,8 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 
     //blending
-    //glEnable(GL_BLEND);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     //face culling
     glEnable(GL_CULL_FACE);
@@ -170,7 +179,8 @@ int main() {
     glFrontFace(GL_CW);
     // build and compile shaders
     // -------------------------
-    Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
+
+    Shader ourShader("resources/shaders/5.1.light_casters.vs", "resources/shaders/5.1.light_casters.fs");
     //Shader shader("resources/shaders/6.1.cubemaps.vs", "resources/shaders/6.1.cubemaps.fs");
     Shader skyboxShader("resources/shaders/6.1.skybox.vs", "resources/shaders/6.1.skybox.fs");
     Shader blendingShader("resources/shaders/3.1.blending.vs", "resources/shaders/3.1.blending.fs");
@@ -232,15 +242,26 @@ int main() {
             -1.0f, -1.0f,  1.0f,
             1.0f, -1.0f,  1.0f
     };
-    PointLight& pointLight = programState->pointLight;
+    //PointLight& pointLight = programState->pointLight;
+    DirLight& dirLight=programState->dirLight;
+   /*
     pointLight.position = glm::vec3(4.0f, 4.0, 0.0);
     pointLight.ambient = glm::vec3(0.1, 0.1, 0.1);
     pointLight.diffuse = glm::vec3(0.6, 0.6, 0.6);
     pointLight.specular = glm::vec3(1.0, 1.0, 1.0);
+    */
+    //
+    // dirLight.direction = glm::vec3(-0.2f* cos(glfwGetTime()), -1.0f, -0.3f);
+    dirLight.direction = glm::vec3(-3.0f,-10.0f,2.0f);
+    dirLight.ambient = glm::vec3(0.2f, 0.2f, 0.2f);
+    dirLight.diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
+    dirLight.specular = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    pointLight.constant = 1.0f;
-    pointLight.linear = 0.00f;
-    pointLight.quadratic = 0.00f;
+
+
+//    pointLight.constant = 1.0f;
+//    pointLight.linear = 0.00f;
+//    pointLight.quadratic = 0.00f;
 
     // skybox VAO
     unsigned int skyboxVAO, skyboxVBO;
@@ -264,7 +285,9 @@ int main() {
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glBindVertexArray(0);
-    unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/biljka.png").c_str());
+    stbi_set_flip_vertically_on_load(false);
+    unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/vaza.png").c_str());
+    stbi_set_flip_vertically_on_load(true);
     // draw in wireframe
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     vector<std::string> faces
@@ -293,6 +316,7 @@ int main() {
 
     // shader configuration
     // --------------------
+
     blendingShader.use();
     blendingShader.setInt("texture1", 0);
 
@@ -319,16 +343,25 @@ int main() {
 
         // don't forget to enable shader before setting uniforms
         ourShader.use();
-        pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
-        ourShader.setVec3("pointLight.position", pointLight.position);
-        ourShader.setVec3("pointLight.ambient", pointLight.ambient);
-        ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
-        ourShader.setVec3("pointLight.specular", pointLight.specular);
-        ourShader.setFloat("pointLight.constant", pointLight.constant);
-        ourShader.setFloat("pointLight.linear", pointLight.linear);
-        ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
-        ourShader.setVec3("viewPosition", programState->camera.Position);
-        ourShader.setFloat("material.shininess", 32.0f);
+        //pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
+       // pointLight.position = glm::vec3(4.0f , 0.0f, -8.0f);
+//        ourShader.setVec3("pointLight.position", pointLight.position);
+//        ourShader.setVec3("pointLight.ambient", pointLight.ambient);
+//        ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
+//        ourShader.setVec3("pointLight.specular", pointLight.specular);
+//        ourShader.setFloat("pointLight.constant", pointLight.constant);
+//        ourShader.setFloat("pointLight.linear", pointLight.linear);
+//        ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
+//        ourShader.setVec3("viewPosition", programState->camera.Position);
+//        ourShader.setFloat("material.shininess", 10.0f);
+
+
+        ourShader.setVec3("light.direction", dirLight.direction);
+        ourShader.setVec3("light.ambient", dirLight.ambient);
+        ourShader.setVec3("light.diffuse", dirLight.diffuse);
+        ourShader.setVec3("light.specular", dirLight.specular);
+        ourShader.setVec3("viewPos", programState->camera.Position);
+        ourShader.setFloat("material.shininess", 10.0f);
 
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(programState->camera.Zoom),
@@ -339,7 +372,7 @@ int main() {
         glDepthFunc(GL_LEQUAL); //pomeriti mozda
         // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,glm::vec3 (0.30f,-3.2f,-2.0f)); // translate it down so it's at the center of the scene
+        model = glm::translate(model,glm::vec3 (0.0f,0.0f,-4.0f)); // translate it down so it's at the center of the scene
         float angle=glm::radians(90.0f);
         model= glm::rotate(model, angle, glm::vec3(0.0f, 0.0f, 1.0f));
         angle=glm::radians(90.0f);
@@ -348,7 +381,34 @@ int main() {
 
         ourShader.setMat4("model", model);
         ourModel.Draw(ourShader);
+
+
+
         // skybox cube
+
+
+
+
+        // vegetation
+
+        glBindVertexArray(transparentVAO);
+        glBindTexture(GL_TEXTURE_2D, transparentTexture);
+
+        blendingShader.use();
+        blendingShader.setMat4("view", view);
+        blendingShader.setMat4("projection", projection);
+
+            model=glm::mat4 (1.0f);
+            model = glm::translate(model, glm::vec3(-2.6,1.0,-7));
+            model=glm::scale(model,glm::vec3(2,2,0));
+            blendingShader.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        model=glm::mat4 (1.0f);
+        model = glm::translate(model, glm::vec3(0.8,0.9,-7));
+        model=glm::scale(model,glm::vec3(2,2,0));
+        blendingShader.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
 
         skyboxShader.use();
         view[3][0] = 0;
@@ -364,20 +424,6 @@ int main() {
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
         glDepthFunc(GL_LESS); // set depth function back to default
-
-
-        // vegetation
-        glBindVertexArray(transparentVAO);
-        glBindTexture(GL_TEXTURE_2D, transparentTexture);
-
-        blendingShader.use();
-        for (unsigned int i = 0; i < vegetation.size(); i++)
-        {
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, vegetation[i]);
-            blendingShader.setMat4("model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-        }
 
         if (programState->ImGuiEnabled)
             DrawImGui(programState);
@@ -434,7 +480,7 @@ unsigned int loadCubemap(vector<std::string> faces)
 void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    /*
+
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         programState->camera.ProcessKeyboard(FORWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -443,7 +489,7 @@ void processInput(GLFWwindow *window) {
         programState->camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         programState->camera.ProcessKeyboard(RIGHT, deltaTime);
-        */
+
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -494,9 +540,9 @@ void DrawImGui(ProgramState *programState) {
         ImGui::DragFloat3("Backpack position", (float*)&programState->backpackPosition);
         ImGui::DragFloat("Backpack scale", &programState->backpackScale, 0.05, 0.1, 4.0);
 
-        ImGui::DragFloat("pointLight.constant", &programState->pointLight.constant, 0.05, 0.0, 1.0);
-        ImGui::DragFloat("pointLight.linear", &programState->pointLight.linear, 0.05, 0.0, 1.0);
-        ImGui::DragFloat("pointLight.quadratic", &programState->pointLight.quadratic, 0.05, 0.0, 1.0);
+//        ImGui::DragFloat("pointLight.constant", &programState->pointLight.constant, 0.05, 0.0, 1.0);
+//        ImGui::DragFloat("pointLight.linear", &programState->pointLight.linear, 0.05, 0.0, 1.0);
+//        ImGui::DragFloat("pointLight.quadratic", &programState->pointLight.quadratic, 0.05, 0.0, 1.0);
         ImGui::End();
     }
 
