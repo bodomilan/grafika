@@ -242,6 +242,18 @@ int main() {
             -1.0f, -1.0f,  1.0f,
             1.0f, -1.0f,  1.0f
     };
+    float planeVertices[] = {
+            // positions            // normals         // texcoords
+            0.0f, -2.0f,  -2.0f,  0.0f, 1.0f,
+            0.0f, 2.0f,  2.0f,  0.0f, 1.0f,
+            0.0f, -1.0f, -4.0f,  0.0f, 1.0f,
+
+            0.0f, 1.0f,  -4.0f,  0.0f, 1.0f,
+            0.0f, 2.0f, 2.0f,  0.0f, 1.0f,
+            0.0f, -1.0f, -4.0f,  0.0f, 1.0f,
+
+
+    };
     //PointLight& pointLight = programState->pointLight;
     DirLight& dirLight=programState->dirLight;
    /*
@@ -252,9 +264,9 @@ int main() {
     */
     //
     // dirLight.direction = glm::vec3(-0.2f* cos(glfwGetTime()), -1.0f, -0.3f);
-    dirLight.direction = glm::vec3(-3.0f,-10.0f,2.0f);
+    dirLight.direction = glm::vec3(-2.0f,-10.0f,2.0f);
     dirLight.ambient = glm::vec3(0.2f, 0.2f, 0.2f);
-    dirLight.diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
+    dirLight.diffuse = glm::vec3(0.7f, 0.7f, 0.7f);
     dirLight.specular = glm::vec3(1.0f, 1.0f, 1.0f);
 
 
@@ -285,6 +297,20 @@ int main() {
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glBindVertexArray(0);
+
+    //stazaVAO
+    unsigned int stazaVAO, stazaVBO;
+    glGenVertexArrays(1, &stazaVAO);
+    glGenBuffers(1, &stazaVBO);
+    glBindVertexArray(stazaVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, stazaVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glBindVertexArray(0);
+
     stbi_set_flip_vertically_on_load(false);
     unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/vaza.png").c_str());
     stbi_set_flip_vertically_on_load(true);
@@ -398,17 +424,37 @@ int main() {
         blendingShader.setMat4("view", view);
         blendingShader.setMat4("projection", projection);
 
-            model=glm::mat4 (1.0f);
-            model = glm::translate(model, glm::vec3(-2.6,1.0,-7));
-            model=glm::scale(model,glm::vec3(2,2,0));
-            blendingShader.setMat4("model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
+        model=glm::mat4 (1.0f);
+        model = glm::translate(model, glm::vec3(-2.6,1.0,-7));
+        model=glm::scale(model,glm::vec3(2,2,0));
+        blendingShader.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
 
         model=glm::mat4 (1.0f);
         model = glm::translate(model, glm::vec3(0.8,0.9,-7));
         model=glm::scale(model,glm::vec3(2,2,0));
         blendingShader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        //staza
+
+        unsigned int stazaTexture = loadTexture(FileSystem::getPath("resources/textures/kamen.jpg").c_str());
+        glBindVertexArray(stazaVAO);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, stazaTexture);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+
+
+
+
+
+
+
+
+
+
+
 
         skyboxShader.use();
         view[3][0] = 0;
@@ -425,8 +471,8 @@ int main() {
         glBindVertexArray(0);
         glDepthFunc(GL_LESS); // set depth function back to default
 
-        if (programState->ImGuiEnabled)
-            DrawImGui(programState);
+//        if (programState->ImGuiEnabled)
+//            DrawImGui(programState);
 
 
 

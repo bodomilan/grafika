@@ -1,13 +1,20 @@
-# project_base
-Prazan projekat sa pratećim bibliotekama koje koristimo na času. 
+# Projekat iz grafike
+U projektu su implementirane:
+* Obavezne lekcije:
+  * [1-7] nedelje
+  * Blending
+  * Face culling
+  * Advanced lighting(na direkcionom tipu osvetljenja)
+* Opcione lekcije:
+  * Model
+  * Lekcija iz grupe A:Cubemaps
 
 # Uputstvo
-1. `git clone https://github.com/matf-racunarska-grafika/project_base.git`
-2. CLion -> Open -> path/to/my/project_base
-3. Main se nalazi u src/main.cpp
-4. Cpp fajlovi idu u src folder
-5. Zaglavlja (h i hpp) fajlovi idu u include
-6. Šejderi idu u folder shaders. `Vertex shader` ima ekstenziju `.vs`, `fragment shader` ima ekstenziju `.fs`
-7. ALT+SHIFT+F10 -> project_base -> run
+	Razgledanje scene pomeranjem misa.
+	
+Slike za skajboks su preuzete sa sajta http://www.humus.name.<br>
+Model je preuzet sa sajta https://www.cgtrader.com. <br>
 
-Slike za skajboks su preuzete sa sajta http://www.humus.name.
+# Slika ekrana
+![screenshot](ss.png)
+
